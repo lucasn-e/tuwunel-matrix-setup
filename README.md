@@ -74,7 +74,7 @@ if you want MatrixRTC support you will need to add the following:
 `ingress TCP destination port: 7881 ACCEPT`   
 `ingress UDP destination port: 50100-50200 ACCEPT`
 
-50100-50200 is a fairly spread. you might need more than 100 ports, or way fewer, depending on the size of your community.
+50100-50200 is a fairly arbitrary spread. you might need more than 100 ports, or way fewer, depending on the size of your community.
 
 make sure you have no SMTP egress deny rules that would affect us if you plan to use SMTP. outbound SMTP 587/465 need to be accepted.
 
