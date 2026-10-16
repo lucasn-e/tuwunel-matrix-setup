@@ -57,18 +57,27 @@ create these records wherever your domain's nameservers actually point (check wi
 we actually need quite a few firewall rules so strap in:
 
 `ssh ingress TCP destination port: 22 ACCEPT`
+
 `HTTP (cert + redirect) ingress TCP destination port: 80 ACCEPT`
+
 `HTTPS ingress TCP destination port: 443 ACCEPT`
+
 `DNS replies ingress UDP source port: 53 ACCEPT`
+
 `NTP replies ingress UDP source port: 123 ACCEPT`
+
 potentially optional. not optional if IPv6 is at play. omit at your own risk:
+
 `ICMP    ingress  protocol ICMP    ACCEPT    # ping, path-MTU discovery (IPv4)`
+
 `ICMPv6  ingress  protocol ICMPv6  ACCEPT    # REQUIRED if the host has any IPv6`
 
 this sets us up for matrix/tuwunel + caddy TLS
 
 if you want MatrixRTC support you will need to add the following:
+
 `ingress TCP destination port: 7881 ACCEPT`
+
 `ingress UDP destination port: 50100-50200 ACCEPT`
 
 50100-50200 is a fairly arbitrary value. you might need more than 100 ports, or way fewer, depending on the size of your community.
@@ -81,10 +90,13 @@ in total we want to setup 4 config files. of those 4, 3 are necessary and 1 is o
 
 ### tuwunel.toml
 create a root directory as well as a database directory for your tuwunel setup. this is our matrix dir.
+
 `mkdir -p ~/tuwunel/db` (you can name it whatever you want of course)
 
 use your preferred editor
+
 `nano ~/tuwunel/tuwunel.toml`
+
 `vim ~/tuwunel/tuwunel.toml`
 
 ```toml
@@ -107,6 +119,7 @@ client = "https://YOUR.MATRIX.DOMAIN"
 server = "YOUR.MATRIX.DOMAIN:443"
 livekit_url = "https://YOUR.RTC.DOMAIN"
 ```
+
 make sure to replace the fillers with the domains we set up in step 2.
 
 ### Caddy
@@ -115,6 +128,7 @@ first we need to install caddy
 `sudo apt update && sudo apt install -y caddy`
 
 then we want to create our caddyfile in root:
+
 ```bash
 echo 'your.matrix.domain {
     reverse_proxy matrix-host:8008
@@ -130,6 +144,7 @@ your.rtc.domain {
 }' | sudo tee /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
+
 remember that we're referencing the `matrix-host` we set up in step 1.
 
 ### lk-jwt
