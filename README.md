@@ -27,12 +27,12 @@ this command may change so doublecheck it with `!admin users --help`. at the tim
 
 ## getting started
 
-1. Hostnames
+## 1. Hostnames
 while you're of course free to simply use localhost for the entire setup, I would highly recommend creating a custom hostname for multiple reasons since it's self documenting. regardless of an `ss -tlnp` or config files, no guesswork is required.
 
 something like: `echo "127.0.0.2 matrix-host" | sudo tee -a /etc/hosts`
 
-2. DNS setups
+## 2. DNS setups
 you will need two `A` entries. one for tuwunel and one for the MatrixRTC. meaning if you don't care about MatrixRTC you can skip the second entry as you may have guessed.
 
 something like
@@ -53,7 +53,7 @@ IP: <YOURSERVER>
 
 create these records wherever your domain's nameservers actually point (check with `nslookup -type=NS yourdomain`); a panel you don't delegate to does nothing.
 
-3. Firewall setup
+## 3. Firewall setup
 we actually need quite a few firewall rules so strap in:
 
 `ssh ingress TCP destination port: 22 ACCEPT`
@@ -84,8 +84,7 @@ if you want MatrixRTC support you will need to add the following:
 
 make sure you have no SMTP egress deny rules that would affect us if you plan to use SMTP. outbound SMTP 587/465 need to be accepted.
 
-4. Config files
-
+## 4. Config files
 in total we want to setup 4 config files. of those 4, 3 are necessary and 1 is optional but helpful
 
 ### tuwunel.toml
@@ -186,7 +185,7 @@ webhook:
     - https://your.rtc.domain/sfu_webhook
 ```
 
-5. first run and test!
+## 5. first run and test!
 assuming all goes well, we're actually almost done. all we're now doing is starting the three docker containers (tuwunel, livekit and lk-jwt) as well as Caddy for TLS.
 
 ```bash
