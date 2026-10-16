@@ -28,7 +28,7 @@ this command may change so doublecheck it with `!admin users --help`. at the tim
 ## getting started
 
 ## 1. Hostnames
-while you're of course free to simply use localhost for the entire setup, I would highly recommend creating a custom hostname for multiple reasons since it's self documenting. regardless of an `ss -tlnp` or config files, no guesswork is required.
+while you're of course free to simply use localhost for the entire setup, I would highly recommend creating a custom hostname since it's self documenting. regardless of an `ss -tlnp` or config files, we're never guessing but immediately see `matrix-host`.
 
 something like: `echo "127.0.0.2 matrix-host" | sudo tee -a /etc/hosts`
 
@@ -71,11 +71,10 @@ this sets us up for matrix/tuwunel + caddy TLS
 
 if you want MatrixRTC support you will need to add the following:
 
-`ingress TCP destination port: 7881 ACCEPT`
-
+`ingress TCP destination port: 7881 ACCEPT`   
 `ingress UDP destination port: 50100-50200 ACCEPT`
 
-50100-50200 is a fairly arbitrary value. you might need more than 100 ports, or way fewer, depending on the size of your community.
+50100-50200 is a fairly spread. you might need more than 100 ports, or way fewer, depending on the size of your community.
 
 make sure you have no SMTP egress deny rules that would affect us if you plan to use SMTP. outbound SMTP 587/465 need to be accepted.
 
@@ -228,12 +227,14 @@ don't @ me if you tried with ElementX because you didn't read carefully.
 - lk-jwt caches your homeserver's address from its boot time. If you ever change well_known in tuwunel, run `docker restart lk-jwt` or calls will fail against the old configuration.
 - any change in the tuwunel.toml also needs a `docker restart tuwunel`
 
-if your curl looks good, you can now login via ElementX. you should do this because we will now be testing the MatrixRTC as this is only needed for ElementX.  
-navigate to your `Admin Room` within matrix and create a new test user with `!admin users create-user test` and login via `https://app.element.io`. 
+if your curl looks good and you managed to register, you can now login via ElementX.  
+you should do this because we will now be testing the MatrixRTC as this is only needed for ElementX.  
+navigate to your `Admin Room` within element and create a new test user with `!admin users create-user test` and login via `https://app.element.io`.  
 go back to your server console and run `docker logs -f lk-jwt` as we need to see where and how it fails, in case it fails.  
 with the logs running, attempt to call your test user from your ElementX device.
 
-the above configs are tested and in working condition so it *should* just work. if it doesn't, read the error log carefully. it is likely a mistake in a config file, your firewall settings or the DNS entries.
+the above configs are tested and in working condition so it *should* just work. if it doesn't, read the error log carefully.  
+it is likely a mistake in a config file, your firewall settings or the DNS entries.
 
 I can't write an answer for every error you may run into here but a helpful curl would be `curl -i https://your.rtc.domain/healthz` with the expected output of something like this:
 ```
