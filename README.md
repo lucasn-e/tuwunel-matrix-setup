@@ -1,7 +1,7 @@
 # baby's first matrix server
 
-this guide assumes you're using debian. because I am.
-it also uses docker so you'll need that. https://docs.docker.com/engine/install/debian/
+this guide assumes you're using debian. because I am.  
+it also uses docker so you'll need that. https://docs.docker.com/engine/install/debian/. 
 if you don't, I'm sure you can make it happen. godspeed.
 
 Note: never copy the `db/` directory between different `server_name`s. each tuwunel setup gets its own `server_name` which is set once and can never be changed. the `db/` is `server_name` specific and is heavily recommended to be backed up periodically as it stores your entire server's history.
@@ -10,16 +10,16 @@ Note: never copy the `db/` directory between different `server_name`s. each tuwu
 tuwunel is an open source alternative to element's synapse server.
 I like open source.
 
-smtp is fully optional if you don't mind doing manual password recovery for your users. I added it because I don't want to do that.
-matrixRTC is fully optional if you don't mind your ElementX users not being able to audio/video call.
+smtp is fully optional if you don't mind doing manual password recovery for your users. I added it because I don't want to do that.  
+matrixRTC is fully optional if you don't mind your ElementX users not being able to audio/video call.  
 caddy is fully optional if you don't mind your connection being HTTP
 
 ### can I also use nginx?
 yes.
 
 ### will you add MAS to support a registration process via ElementX?
-no.
-MAS offers essentially no meaningful benefits as of time of writing and simply adds another required domain, another service clogging your cpu, another db to backup. all so that your users can use ElementX to register.
+no.  
+MAS offers essentially no meaningful benefits as of time of writing and simply adds another required domain, another service clogging your cpu, another db to backup. all so that your users can use ElementX to register.  
 the issues can be entirely circumvented by using app.element.io or the desktop client. or by you manually creating users using the admin command
 `!admin users create-user <USERNAME>`
 this command may change so doublecheck it with `!admin users --help`. at the time of writing, it is the working command
@@ -56,20 +56,15 @@ create these records wherever your domain's nameservers actually point (check wi
 ## 3. Firewall setup
 we actually need quite a few firewall rules so strap in:
 
-`ssh ingress TCP destination port: 22 ACCEPT`
-
-`HTTP (cert + redirect) ingress TCP destination port: 80 ACCEPT`
-
-`HTTPS ingress TCP destination port: 443 ACCEPT`
-
-`DNS replies ingress UDP source port: 53 ACCEPT`
-
+`ssh ingress TCP destination port: 22 ACCEPT`  
+`HTTP (cert + redirect) ingress TCP destination port: 80 ACCEPT`  
+`HTTPS ingress TCP destination port: 443 ACCEPT`  
+`DNS replies ingress UDP source port: 53 ACCEPT`  
 `NTP replies ingress UDP source port: 123 ACCEPT`
 
 potentially optional. not optional if IPv6 is at play. omit at your own risk:
 
-`ICMP    ingress  protocol ICMP    ACCEPT    # ping, path-MTU discovery (IPv4)`
-
+`ICMP    ingress  protocol ICMP    ACCEPT    # ping, path-MTU discovery (IPv4)`  
 `ICMPv6  ingress  protocol ICMPv6  ACCEPT    # REQUIRED if the host has any IPv6`
 
 this sets us up for matrix/tuwunel + caddy TLS
@@ -214,28 +209,28 @@ docker run -d --name lk-jwt --restart unless-stopped \
 ```
 
 the choice is yours how we proceed, either by looking into logs immediately, or trying to see if the server is reachable by your preferred matrix client.
-for this guide we use element so we navigate to `https://app.element.io` and attempt to register using the matrix domain instead of the `matrix.org` default homeserver by element.
+for this guide we use element so we navigate to `https://app.element.io` and attempt to register using the matrix domain instead of the `matrix.org` default homeserver by element.  
 you will be asked for a registration token according to our `tuwunel.toml` so refer back to this config file and look for the token you set in `registration_token`.
 don't share this token, especially not on unencrypted channels. it would completely void your security layers since this token will allow anyone to register until you change it in the config file and restart the tuwunel docker container.
 
-if this errors in the application we have multiple options.
-first we check the docker logs `docker logs -f tuwunel`
+if this errors in the application we have multiple options.  
+first we check the docker logs `docker logs -f tuwunel`  
 the last line should be `Listening on ["tcp:0.0.0.0:8008"]`
 
-if the output is correct but you still can't connect, it's possible we're running into an issue with the resolver so we try curling:
+if the output is correct but you still can't connect, it's possible we're running into an issue with the resolver so we try curling:  
 `curl https://your.matrix.domain/_matrix/client/versions` (do this on your machine, not the server)
 
 if it's not reachable, check your device's internet settings and add the DNS resolvers `1.1.1.1` and `8.8.8.8`. if you're connected via wifi, restart your wifi and run the curl again.
 
 important notes:
-- I specifically cited `https://app.element.io` because ElementX will not allow you to register a user due to a missing MAS setup.
+- I specifically cited `https://app.element.io` because ElementX will not allow you to register a user due to a missing MAS setup.  
 don't @ me if you tried with ElementX because you didn't read carefully.
 - lk-jwt caches your homeserver's address from its boot time. If you ever change well_known in tuwunel, run `docker restart lk-jwt` or calls will fail against the old configuration.
 - any change in the tuwunel.toml also needs a `docker restart tuwunel`
 
-if your curl looks good, you can now login via ElementX. you should do this because we will now be testing the MatrixRTC as this is only needed for ElementX.
-navigate to your `Admin Room` within matrix and create a new test user with `!admin users create-user test` and login via `https://app.element.io`
-go back to your server console and run `docker logs -f lk-jwt` as we need to see where and how it fails, in case it fails.
+if your curl looks good, you can now login via ElementX. you should do this because we will now be testing the MatrixRTC as this is only needed for ElementX.  
+navigate to your `Admin Room` within matrix and create a new test user with `!admin users create-user test` and login via `https://app.element.io`. 
+go back to your server console and run `docker logs -f lk-jwt` as we need to see where and how it fails, in case it fails.  
 with the logs running, attempt to call your test user from your ElementX device.
 
 the above configs are tested and in working condition so it *should* just work. if it doesn't, read the error log carefully. it is likely a mistake in a config file, your firewall settings or the DNS entries.
@@ -255,5 +250,5 @@ testing TL;DR:
 - `docker logs -f CONTAINER` to get the logs of any specific container that may be acting up
 - `journalctl -u caddy` to get the caddy logs in case caddy is acting up 
 
-I'm not adding the config files to the repo because I believe in your ability to copy paste.
+I'm not adding the config files to the repo because I believe in your ability to copy paste.  
 good luck!
